@@ -1,5 +1,4 @@
-npx db prisma -> untuk mengpush schema yang  kita buat di dalam prisma
-
+// npx db prisma -> untuk mengpush schema yang  kita buat di dalam prisma
 
 // LOGIC
 // CARI EMAIL / USERNAME  DI DATABASE
