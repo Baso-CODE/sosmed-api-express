@@ -5,7 +5,7 @@ export const findUsersByEmailAndUsername = async (
   username: string
 ) => {
   try {
-    const user = await prisma.user.findMany({
+    const users = await prisma.user.findMany({
       where: {
         OR: [
           {
@@ -21,7 +21,7 @@ export const findUsersByEmailAndUsername = async (
         ],
       },
     });
-    return user;
+    return users;
   } catch (error) {
     console.log(error);
     throw error;
