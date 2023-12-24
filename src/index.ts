@@ -1,7 +1,7 @@
 import express, { NextFunction, Response, Request } from "express";
 import cors from "cors";
 import usersRouters from "./routers/usersRouters";
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 7000;
 const app = express();
 
 app.use(cors());
