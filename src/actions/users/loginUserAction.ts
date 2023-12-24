@@ -7,8 +7,9 @@
 // dengan password yang di masukka oleh user (req.body)
 // kalau password nya sama retunn successfully
 
-import { compirePassword } from "../../helper/bcrypt";
+import { comparePasswords } from "../../helper/bcrypt";
 import { excludeFields } from "../../helper/excludeFields";
+import { createToken } from "../../helper/jwt";
 import { findUserByEmail } from "../../repositories/users/findUserByEmail";
 import { findUserByUsername } from "../../repositories/users/findUserByUsername";
 
@@ -16,41 +17,47 @@ export const loginUserAction = async (
   usernameOrEmail: string,
   password: string
 ) => {
-  let user;
-  if (usernameOrEmail.includes("@")) {
-    // find user by email
-    user = await findUserByEmail(usernameOrEmail);
-  } else {
-    // find user by username
-    user = await findUserByUsername(usernameOrEmail);
-  }
-  if (!user) {
-    return {
-      status: 400,
-      message: "Account not found",
-    };
-  }
-  if (user.isDeleted) {
-    return {
-      status: 400,
-      message: "Account deleted",
-    };
-  }
-  const isPasswordValid = await compirePassword(password, user.password);
-  if (!isPasswordValid) {
-    return {
-      status: 400,
-      message: "Invalid password",
-    };
-  }
-
-  const dataWithoutPassword = excludeFields(user, ["password"]);
-
   try {
+    let user;
+
+    if (usernameOrEmail.includes("@")) {
+      user = await findUserByEmail(usernameOrEmail);
+    } else {
+      user = await findUserByUsername(usernameOrEmail);
+    }
+
+    if (!user) {
+      return {
+        status: 404,
+        message: "Account not found",
+      };
+    }
+
+    if (user.isDeleted) {
+      return {
+        status: 400,
+        message: "Account deleted",
+      };
+    }
+
+    const isPasswordValid = await comparePasswords(password, user.password);
+
+    if (!isPasswordValid) {
+      return {
+        status: 400,
+        message: "Invalid credentials",
+      };
+    }
+
+    const dataWithoutPassword = excludeFields(user, ["password"]);
+
+    const token = createToken({ id: user.id });
+
     return {
       status: 200,
-      message: "Login successfully",
+      message: "login success",
       data: dataWithoutPassword,
+      token,
     };
   } catch (error) {
     console.log(error);
