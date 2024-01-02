@@ -7,6 +7,9 @@ export const getTweetsRepo = async (): Promise<ITweet[]> => {
       include: {
         user: true,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
     return tweets;
   } catch (error) {
